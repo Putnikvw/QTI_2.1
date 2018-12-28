@@ -18,7 +18,7 @@ object frmMain: TfrmMain
     Top = 248
     Width = 105
     Height = 25
-    Caption = 'Open File'
+    Caption = 'Create QTI'
     TabOrder = 0
     OnClick = btnOpenClick
   end
@@ -27,11 +27,12 @@ object frmMain: TfrmMain
     Top = 248
     Width = 123
     Height = 25
-    Caption = 'Create HTML Files'
+    Caption = 'Resave DOC -> RTF'
     TabOrder = 1
+    OnClick = btnExportXMLClick
   end
   object btnSaveDocFiles: TcxButton
-    Left = 248
+    Left = 240
     Top = 248
     Width = 113
     Height = 25

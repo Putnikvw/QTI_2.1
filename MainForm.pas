@@ -22,10 +22,12 @@ type
     RVStyle1: TRVStyle;
     procedure btnOpenClick(Sender: TObject);
     procedure btnSaveDocFilesClick(Sender: TObject);
+    procedure btnExportXMLClick(Sender: TObject);
   private
     { Private declarations }
 //    function CheckString(ASource: string): Boolean;
     procedure ExtractDatafromDoc(ADocName: string);
+    procedure ReSaveRtF;
   public
     { Public declarations }
     procedure ReadWordFile;
@@ -55,6 +57,44 @@ begin
 //    Exit
 //  else
     SaveQti;
+end;
+
+procedure TfrmMain.ReSaveRtF;
+  procedure Save(AFile: string);
+  var
+    WApp: Variant;
+    Doc: Variant;
+  begin
+    WApp := CreateOleObject('Word.Application');
+    try
+      WApp.Visible := False;
+      Doc := WApp.Documents.Open(AFile);
+      if Doc.ReadOnly then
+        Exit
+      else
+      begin
+        AFile := StringReplace(AFile, '.doc', '.rtf', [rfReplaceAll]);
+        Doc.Range.Select;
+        Doc.SaveAs(AFile, wdFormatRTF, EmptyParam, EmptyParam, EmptyParam, EmptyParam, EmptyParam, EmptyParam,
+                   EmptyParam, EmptyParam, EmptyParam, EmptyParam, EmptyParam, EmptyParam, EmptyParam, EmptyParam);
+        AFile := StringReplace(AFile, '.rtf', '.doc', [rfReplaceAll]);
+        DeleteFile(AFile);
+      end;
+    finally
+      WApp.Quit;
+    end;
+  end;
+var
+  Directory, DocList: string;
+begin
+  Directory := ExtractFilePath(ParamStr(0)) + 'Exam_docs\';
+  XMLImport := TSaveXml.Create;
+  try
+    for DocList in XMLImport.CountFile('Exam_docs\', '*.doc') do
+      Save(Directory + DocList);
+  finally
+    XMLImport.Free;
+  end;
 end;
 
 procedure TfrmMain.ExtractDatafromDoc(ADocName: string);
@@ -126,6 +166,11 @@ begin
   end;
 end;
 
+procedure TfrmMain.btnExportXMLClick(Sender: TObject);
+begin
+  ReSaveRtF;
+end;
+
 procedure TfrmMain.btnOpenClick(Sender: TObject);
 begin
   ReadWordFile;
@@ -151,9 +196,6 @@ procedure TfrmMain.btnSaveDocFilesClick(Sender: TObject);
   end;
 
 var
-  Stream: Tblobstream;
-  Strm: TFileStream;
-  BlobFld: TBlobField;
   FileFolder, FName: string;
 begin
   ForceDirectories(ExtractFilePath(ParamStr(0)) + 'Exam_docs\');
@@ -169,18 +211,7 @@ begin
       else
       begin
         FName := RemoveSpecialChars(Exams.FieldByName('TmsExam_ID').AsString);
-        BlobFld := Exams.FieldByName('_Document_') as TBlobField;
-        Stream := Exams.CreateBlobStream(BlobFld, bmRead);
-        try
-          Strm := TFileStream.Create(FileFolder + '\' + FName + '.rtf', fmCreate);
-          try
-            Strm.Write(Stream, Stream.);
-          finally
-            Strm.Free;
-          end;
-        finally
-          Stream.Free;
-        end;
+        (Exams.FieldByName('_Document_') as TBlobField).SaveToFile(FileFolder + '\' + FName + '.doc');
         Exams.Next;
       end;
     end;
