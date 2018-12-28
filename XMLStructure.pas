@@ -122,7 +122,7 @@ begin
     Resources := Root.AddChild('resources');
     GuidList := TDictionary<string, string>.Create;
     try
-      for FileName in CountFile(AFolder) do
+      for FileName in CountFile('XML_Import\' + AFolder + '\') do
       begin
         GuidList.AddOrSetValue(FileName, ReturnGUID);
         GuidList.TryGetValue(FileName, GUID);
@@ -152,6 +152,7 @@ begin
         Metadata.AddChild('imsqti:toolName').NodeValue := 'FastTestWeb';
         Metadata.AddChild('imsqti:toolVersion').NodeValue := '3.75.8';
         Metadata.AddChild('imsqti:toolVendor').NodeValue := '4ROI';
+
         Metadata.ParentNode.ParentNode.AddChild('file').Attributes['href'] := FileName;
       end;
       XML.SaveToFile(rsSaveDirectory + '\' + AFolder + '\' + 'imsmanifest.xml');
@@ -213,7 +214,7 @@ begin
       Root.ChildNodes['itemBody'].ChildNodes['choiceInteraction'].ChildNodes[I].Attributes['identifier'] := AFileName + '_R_' + IntToStr(I);
 
     Root.AddChild('responseProcessing').Attributes['template'] := 'http://www.imsglobal.org/question/qti_v2p1/rptemplates/map_response';
-    ForceDirectories(rsSaveDirectory + '\' + AFileName);
+    ForceDirectories(rsSaveDirectory + AFileName);
     XML.SaveToFile(rsSaveDirectory + '\' + AFileName + '\' + AFileName + '_' + IntToStr(ALevel) + '.xml');
   finally
     XML := nil;

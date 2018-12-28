@@ -43,14 +43,14 @@ object frmMain: TfrmMain
   object rView: TRichViewEdit
     Left = 8
     Top = 8
-    Width = 561
+    Width = 553
     Height = 234
     AcceptDragDropFormats = [rvddRTF, rvddText, rvddUnicodeText, rvddBitmap, rvddMetafile, rvddFiles]
     ReadOnly = False
     TabOrder = 3
     DoInPaletteMode = rvpaCreateCopies
     Options = [rvoAllowSelection, rvoScrollToEnd, rvoShowCheckpoints, rvoShowPageBreaks, rvoAutoCopyText, rvoAutoCopyUnicodeText, rvoAutoCopyRVF, rvoAutoCopyImage, rvoAutoCopyRTF, rvoFormatInvalidate, rvoDblClickSelectsWord, rvoRClickDeselects]
-    RTFOptions = [rvrtfSaveStyleSheet, rvrtfDuplicateUnicode, rvrtfSaveEMFAsWMF, rvrtfSaveJpegAsJpeg, rvrtfSavePngAsPng, rvrtfSaveBitmapDefault, rvrtfSavePicturesBinary, rvrtfPNGInsteadOfBitmap, rvrtfSaveDocParameters]
+    RTFOptions = [rvrtfDuplicateUnicode, rvrtfSaveEMFAsWMF, rvrtfSaveJpegAsJpeg, rvrtfSavePngAsPng, rvrtfSaveBitmapDefault, rvrtfSavePicturesBinary, rvrtfPNGInsteadOfBitmap, rvrtfSaveDocParameters]
     RTFReadProperties.TextStyleMode = rvrsAddIfNeeded
     RTFReadProperties.ParaStyleMode = rvrsAddIfNeeded
     RVFOptions = [rvfoSavePicturesBody, rvfoSaveControlsBody, rvfoSaveBinary, rvfoSaveTextStyles, rvfoSaveParaStyles, rvfoSaveDocProperties, rvfoLoadDocProperties, rvfoSaveDocObjects, rvfoLoadDocObjects]
