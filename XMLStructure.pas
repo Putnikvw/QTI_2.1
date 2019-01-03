@@ -16,6 +16,7 @@ type
 
   public
     function CountFile(ADirectory: string; const AFileType: string = '*_*.xml'): TList<string>;
+    function CountSameFile(ADirectory: string; AFile: string): TList<string>;
     procedure SaveToFile(AList: TList<string>; AFileName: string; ALevel: integer);
     procedure SaveManifest(AFolder: string);
     procedure SaveData(AGuid: TDictionary<string, string>; ADirectory: string);
@@ -26,6 +27,20 @@ implementation
 //var
 //  rsSaveDirectory: string; // = '.\XML_Import\';
 { TSaveXml }
+
+function TSaveXml.CountSameFile(ADirectory: string; AFile: string): TList<string>;
+var
+  sr: TSearchRec;
+begin
+  Result := TList<string>.Create;
+  ChDir(ExtractFilePath(ParamStr(0)) + '\' + ADirectory);
+  if FindFirst(AFile + '.*', faAnyFile, sr) = 0 then
+    repeat
+      Result.Add(sr.Name);
+    until FindNext(sr) <> 0;
+  FindClose(sr);
+end;
+
 
 function TSaveXml.CountFile(ADirectory: string; const AFileType: string = '*_*.xml'): TList<string>;
 var
@@ -103,7 +118,7 @@ procedure TSaveXml.SaveManifest(AFolder: string);
 var
   XML: IXMLDocument;
   Root, Resources, RS, Metadata: IXMLNode;
-  FileName, GUID: string;
+  FileName, GUID, ListFiles: string;
   GuidList: TDictionary<string, string>;
 begin
   XML := TXMLDocument.Create(Application) as IXMLDocument;
@@ -152,8 +167,9 @@ begin
         Metadata.AddChild('imsqti:toolName').NodeValue := 'FastTestWeb';
         Metadata.AddChild('imsqti:toolVersion').NodeValue := '3.75.8';
         Metadata.AddChild('imsqti:toolVendor').NodeValue := '4ROI';
+        for ListFiles in CountSameFile('XML_Import\' + AFolder + '\', StringReplace(FileName, '.xml', '', [rfReplaceAll])) do
+          Metadata.ParentNode.ParentNode.AddChild('file').Attributes['href'] := ListFiles;
 
-        Metadata.ParentNode.ParentNode.AddChild('file').Attributes['href'] := FileName;
       end;
       XML.SaveToFile(rsSaveDirectory + '\' + AFolder + '\' + 'imsmanifest.xml');
       SaveData(GuidList, AFolder);

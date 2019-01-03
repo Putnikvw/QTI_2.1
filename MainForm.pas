@@ -111,6 +111,14 @@ procedure TfrmMain.ExtractDatafromDoc(ADocName: string);
       Result := False;
   end;
 
+  function CheckNextSymbol(AIndex: Integer): Boolean;
+  begin
+    if AIndex = rView.ItemCount - 1 then
+      Result := True
+    else
+    if TRegEx.IsMatch(rView.GetItemTextA(AIndex + 1), '[0-9]{1,1}\.') then
+      Result := True;
+  end;
 const
   Symbols = 15;
 var
@@ -122,52 +130,50 @@ begin
   if rView.LoadRTF(ADocName) then
   begin
     rView.Format;
-    QuestQty := 1;
-    Folder := StringReplace(ADocName, '.rtf', '', [rfReplaceAll]);
-    for I := 0 to rView.ItemCount - 1 do
-    begin
-      if DeleteTrashSymbols(rView.GetItemTextW(I)) or IsQuestion then
+    try
+      QuestQty := 1;
+      Folder := StringReplace(ADocName, '.rtf', '', [rfReplaceAll]);
+      for I := 0 to rView.ItemCount - 1 do
       begin
+        if DeleteTrashSymbols(rView.GetItemTextW(I)) or IsQuestion then
         begin
-          IsQuestion := True;
-          if TRegEx.IsMatch(rView.GetItemTextA(I), '[A-Z]{1,1}\){1,1}') then
-            A := A + '#13#10' + rView.GetItemTextA(I)
-          else
-            A := A + rView.GetItemTextA(I);
-        end;
-        if rView.GetItemStyle(I) = rvsPicture then
-        begin
-          ImgName := TRVGraphicItemInfo(rView.GetItem(I)).ImageFileName;
-          TRVGraphicItemInfo(rView.GetItem(I)).Image.SaveToFile(Folder + '\' + ImgName + '_' + IntToStr(QuestQty) + '.jpeg');
-        end;
-        if (Length(A) > Symbols) and TRegEx.IsMatch(rView.GetItemTextA(I + 1), '[0-9]{1,1}\.') then
-        begin
-          ExtractTextFromWordFile(A, ADocName, QuestQty);
-          Inc(QuestQty, 1);
-          A := '';
-          IsQuestion := False;
+          begin
+            IsQuestion := True;
+            if TRegEx.IsMatch(rView.GetItemTextA(I), '[A-Z]{1,1}\){1,1}') then
+              A := A + '#13#10' + rView.GetItemTextA(I)
+            else
+              A := A + rView.GetItemTextA(I);
+          end;
+          if rView.GetItemStyle(I) = rvsPicture then
+          begin
+            ImgName := StringReplace(ExtractFileName(ADocName), '.rtf', '', [rfReplaceAll]);
+            ForceDirectories(rsSaveDirectory + ImgName);
+            TRVGraphicItemInfo(rView.GetItem(I)).Image.SaveToFile(rsSaveDirectory + '\' + ImgName + '\' + ImgName + '_' + IntToStr(QuestQty) + '.jpeg');
+          end;
+          if (Length(A) > Symbols) and CheckNextSymbol(I) then
+          begin
+            ExtractTextFromWordFile(A, ADocName, QuestQty);
+            Inc(QuestQty, 1);
+            A := '';
+            IsQuestion := False;
+          end;
         end;
       end;
+      DeleteFile(ADocName);
+    finally
+      rView.Clear;
+      rView.Format;
     end;
   end;
-  rView.Clear;
 end;
 
 procedure TfrmMain.SaveQti;
 var
   Directory, DocList: string;
 begin
-  Directory := ExtractFilePath(ParamStr(0)) + 'Exam_docs\';
-  XMLImport := TSaveXml.Create;
-  try
-    for DocList in XMLImport.CountFile('Exam_docs_1\', '*.rtf') do
-    begin
-      ExtractDatafromDoc(Directory + DocList);
-      DeleteFile(Directory + DocList);
-    end;
-  finally
-    XMLImport.Free;
-  end;
+  Directory := ExtractFilePath(ParamStr(0)) + 'Exam_docs_1\';
+  for DocList in XMLImport.CountFile('Exam_docs_1\', '*.rtf') do
+    ExtractDatafromDoc(Directory + DocList);
 end;
 
 procedure TfrmMain.btnExportXMLClick(Sender: TObject);
