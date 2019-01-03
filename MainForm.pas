@@ -115,10 +115,10 @@ procedure TfrmMain.ExtractDatafromDoc(ADocName: string);
   begin
     if AIndex = rView.ItemCount - 1 then
       Result := True
-    else
-    if TRegEx.IsMatch(rView.GetItemTextA(AIndex + 1), '[0-9]{1,1}\.') then
+    else if TRegEx.IsMatch(rView.GetItemTextA(AIndex + 1), '[0-9]{1,1}\.') then
       Result := True;
   end;
+
 const
   Symbols = 15;
 var
@@ -173,7 +173,14 @@ var
 begin
   Directory := ExtractFilePath(ParamStr(0)) + 'Exam_docs_1\';
   for DocList in XMLImport.CountFile('Exam_docs_1\', '*.rtf') do
-    ExtractDatafromDoc(Directory + DocList);
+  begin
+    try
+      ExtractDatafromDoc(Directory + DocList);
+    except
+      on EOutOfMemory do
+        ShowMessage(DocList);
+    end;
+  end;
 end;
 
 procedure TfrmMain.btnExportXMLClick(Sender: TObject);
