@@ -20,4 +20,28 @@ object DMbase: TDMbase
     Left = 32
     Top = 104
   end
+  object Items: TFDQuery
+    Connection = MainConnection
+    FetchOptions.AssignedValues = [evUnidirectional, evCursorKind]
+    FetchOptions.Unidirectional = True
+    SQL.Strings = (
+      'SELECT * FROM [ITEMS.ADT]')
+    Left = 128
+    Top = 104
+  end
+  object DeleteItems: TFDQuery
+    Connection = MainConnection
+    SQL.Strings = (
+      'DELETE FROM [ITEMS.ADT]'
+      'WHERE Item_ID = :Param')
+    Left = 136
+    Top = 176
+    ParamData = <
+      item
+        Name = 'PARAM'
+        DataType = ftInteger
+        ParamType = ptInput
+        Value = Null
+      end>
+  end
 end

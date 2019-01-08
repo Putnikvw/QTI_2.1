@@ -14,6 +14,8 @@ type
   TDMbase = class(TDataModule)
     MainConnection: TFDConnection;
     Exams: TFDQuery;
+    Items: TFDQuery;
+    DeleteItems: TFDQuery;
     procedure DataModuleCreate(Sender: TObject);
   private
     { Private declarations }

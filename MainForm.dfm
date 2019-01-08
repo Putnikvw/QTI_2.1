@@ -32,11 +32,11 @@ object frmMain: TfrmMain
     OnClick = btnExportXMLClick
   end
   object btnSaveDocFiles: TcxButton
-    Left = 240
+    Left = 140
     Top = 248
-    Width = 113
+    Width = 117
     Height = 25
-    Caption = 'Save Docs from DB'
+    Caption = 'Save Docs from Exams'
     TabOrder = 2
     OnClick = btnSaveDocFilesClick
   end
@@ -55,6 +55,15 @@ object frmMain: TfrmMain
     RTFReadProperties.ParaStyleMode = rvrsAddIfNeeded
     RVFOptions = [rvfoSavePicturesBody, rvfoSaveControlsBody, rvfoSaveBinary, rvfoSaveTextStyles, rvfoSaveParaStyles, rvfoSaveDocProperties, rvfoLoadDocProperties, rvfoSaveDocObjects, rvfoLoadDocObjects]
     Style = RVStyle1
+  end
+  object btnExtractItems: TButton
+    Left = 280
+    Top = 248
+    Width = 133
+    Height = 25
+    Caption = 'Save Docs from Items'
+    TabOrder = 4
+    OnClick = btnExtractItemsClick
   end
   object dlgOpen: TOpenDialog
     Filter = '*.rtf|*.RTF'

@@ -1,4 +1,4 @@
-program QTI;
+ program QTI;
 
 uses
   Vcl.Forms,
@@ -10,8 +10,11 @@ uses
 
 begin
   Application.Initialize;
+  ReportMemoryLeaksOnShutdown :=  True;
   Application.MainFormOnTaskbar := True;
   Application.CreateForm(TfrmMain, frmMain);
   Application.CreateForm(TDMbase, DMbase);
   Application.Run;
 end.
+
+

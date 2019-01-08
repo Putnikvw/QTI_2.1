@@ -1,7 +1,7 @@
 ﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
     <PropertyGroup>
         <ProjectGuid>{662D322E-7B5B-4735-BCE9-89A3655DE67B}</ProjectGuid>
-        <ProjectVersion>18.2</ProjectVersion>
+        <ProjectVersion>18.4</ProjectVersion>
         <FrameworkType>VCL</FrameworkType>
         <MainSource>QTI.dpr</MainSource>
         <Base>True</Base>
@@ -54,6 +54,8 @@
         <UWP_DelphiLogo44>$(BDS)\bin\Artwork\Windows\UWP\delphi_UwpDefault_44.png</UWP_DelphiLogo44>
         <UWP_DelphiLogo150>$(BDS)\bin\Artwork\Windows\UWP\delphi_UwpDefault_150.png</UWP_DelphiLogo150>
         <SanitizedProjectName>QTI</SanitizedProjectName>
+        <DCC_MapFile>3</DCC_MapFile>
+        <DCC_GenerateStackFrames>true</DCC_GenerateStackFrames>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Base_Win32)'!=''">
         <DCC_UsePackage>DBXSqliteDriver;dxSpreadSheetCoreDialogsRS25;dxRibbonCustomizationFormRS25;DBXDb2Driver;dxPSPrVwRibbonRS25;vclactnband;vclFireDAC;cxExportRS25;dxSpreadSheetInplaceRichEditRS25;dxHttpIndyRequestRS25;tethering;dxPScxCommonRS25;FireDACADSDriver;cxPivotGridOLAPRS25;FireDACMSSQLDriver;cxSchedulerGridRS25;vcltouch;vcldb;Intraweb;svn;dxGaugeControlRS25;cxLibraryRS25;vclib;dxFlowChartAdvancedCustomizeFormRS25;FireDACDBXDriver;vclx;dxSpreadSheetConditionalFormattingDialogsRS25;dxTileControlRS25;dxMapControlRS25;dxPDFViewerRS25;dxDockingRS25;VCLRESTComponents;cxPageControlRS25;dxPSLnksRS25;dxWizardControlRS25;dxRichEditControlRS25;vclie;fs25;bindengine;dxFireDACServerModeRS25;FireDACMySQLDriver;DataSnapClient;dxPSdxPDFViewerLnkRS25;bindcompdbx;dxPSdxLCLnkRS25;DBXSybaseASEDriver;IndyIPServer;IndySystem;dsnapcon;dxLayoutControlRS25;dxPSRichEditControlLnkRS25;FireDACMSAccDriver;fmxFireDAC;FireDACInfxDriver;vclimg;fsADO25;dxdbtrRS25;dxPScxTLLnkRS25;emshosting;dxSpreadSheetRS25;frxADO25;DBXOdbcDriver;FireDACTDataDriver;FMXTee;cxGridRS25;dxSpreadSheetCoreConditionalFormattingDialogsRS25;DbxCommonDriver;dxPScxSchedulerLnkRS25;dxorgcRS25;frxFD25;xmlrtl;DataSnapNativeClient;fmxobj;dxPScxGridLnkRS25;frx25;rtl;DbxClientDriver;DBXSybaseASADriver;dxPSCoreRS25;dxmdsRS25;fsDB25;appanalytics;IndyIPClient;bindcompvcl;dxThemeRS25;TeeUI;VclSmp;FireDACODBCDriver;DataSnapIndy10ServerTransport;DataSnapProviderClient;frxIBX25;FireDACMongoDBDriver;cxVerticalGridRS25;dxtrmdRS25;dxADOServerModeRS25;DataSnapServerMidas;dxCoreRS25;cxSchedulerTreeBrowserRS25;dxRichEditControlCoreRS25;DBXInterBaseDriver;dxPSTeeChartRS25;DataSnapFireDAC;svnui;frxe25;DBXMSSQLDriver;dxPSdxFCLnkRS25;dxRichEditCoreRS25;DatasnapConnectorsFreePascal;GLScene_RT;bindcompfmx;DBXOracleDriver;fsIBX25;inetdb;dxOfficeCoreRS25;FmxTeeUI;emsedge;fmx;fmxdae;dxPScxPivotGridLnkRS25;dxTabbedMDIRS25;dxBarDBNavRS25;frxDB25;frxTee25;dbexpress;IndyCore;dxFlowChartRS25;dxRichEditDocumentModelRS25;dsnap;DataSnapCommon;fsTee25;dxBarRS25;dxPSDBTeeChartRS25;dxdborRS25;DataSnapConnectors;dxPScxExtCommonRS25;cxPivotGridRS25;dxPSdxSpreadSheetLnkRS25;dxSpreadSheetReportDesignerRS25;dxNavBarRS25;cxSchedulerRibbonStyleEventEditorRS25;FireDACOracleDriver;DBXMySQLDriver;DBXFirebirdDriver;FireDACCommonODBC;cxTreeListRS25;IndyIPCommon;vcl;dxPScxVGridLnkRS25;dxBarExtItemsRS25;dxComnRS25;FireDACDb2Driver;dxPSdxDBTVLnkRS25;TeeDB;dxSpreadSheetCoreRS25;dxServerModeRS25;dxPScxPCProdRS25;FireDACPgDriver;ibmonitor;FireDACASADriver;cxEditorsRS25;ibxpress;Tee;DataSnapServer;ibxbindings;dxPsPrVwAdvRS25;vclwinx;FireDACDSDriver;cxDataRS25;dxRichEditInplaceRS25;cxTreeListdxBarPopupMenuRS25;CustomIPTransport;vcldsnap;dxPSdxOCLnkRS25;bindcomp;DBXInformixDriver;officeXPrt;cxPivotGridChartRS25;cxSchedulerRS25;dxBarExtDBItemsRS25;frxDBX25;dxDBXServerModeRS25;dxGDIPlusRS25;dxPSdxGaugeControlLnkRS25;dbxcds;adortl;dxPSdxDBOCLnkRS25;dxRibbonRS25;dsnapxml;dxSpellCheckerRS25;dbrtl;inetdbxpress;IndyProtocols;dxPSdxMapControlLnkRS25;fmxase;$(DCC_UsePackage)</DCC_UsePackage>
@@ -83,7 +85,7 @@
         <Debugger_DebugSourcePath>C:\Program Files (x86)\Embarcadero\Studio\19.0\source\vcl;C:\Program Files (x86)\Embarcadero\Studio\19.0\source\data;C:\Program Files (x86)\Embarcadero\Studio\19.0\source\rtl;C:\Program Files (x86)\Embarcadero\Studio\19.0\source\ToolsAPI;C:\Program Files (x86)\Embarcadero\Studio\19.0\source\xml;C:\Program Files (x86)\Embarcadero\Studio\19.0\source\fmx;$(Debugger_DebugSourcePath)</Debugger_DebugSourcePath>
         <Debugger_CWD>D:\Work-DSD\QTI\Application</Debugger_CWD>
         <DCC_ExeOutput>.\bin</DCC_ExeOutput>
-        <DCC_Define>LICUNLIM;FASTMM;EUREKALOG_VER7;$(DCC_Define)</DCC_Define>
+        <DCC_Define>LICUNLIM;FASTMM;$(DCC_Define)</DCC_Define>
         <DCC_UnitSearchPath>.\3th;.\dev_consts;.\License;.\COMPONENTS\FastMM\;C:\Program Files (x86)\Embarcadero\Studio\19.0\source;$(DCC_UnitSearchPath)</DCC_UnitSearchPath>
         <DCC_DcuOutput>.\dcu\$(Platform)\$(Config)</DCC_DcuOutput>
     </PropertyGroup>
@@ -106,11 +108,9 @@
         </DelphiCompile>
         <DCCReference Include="MainForm.pas">
             <Form>frmMain</Form>
-            <FormType>dfm</FormType>
         </DCCReference>
         <DCCReference Include="uDMBase.pas">
             <Form>DMbase</Form>
-            <FormType>dfm</FormType>
             <DesignClass>TDataModule</DesignClass>
         </DCCReference>
         <DCCReference Include="XMLStructure.pas"/>

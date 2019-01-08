@@ -1,5 +1,5 @@
 unit XMLStructure;
-
+
 interface
 
 uses
@@ -13,10 +13,9 @@ uses
 type
   TSaveXml = class(TObject)
   private
-
   public
     function CountFile(ADirectory: string; const AFileType: string = '*_*.xml'): TList<string>;
-    function CountSameFile(ADirectory: string; AFile: string): TList<string>;
+    procedure CountSameFile(ADirectory: string; AFile: string; var AResList: TList<string>);
     procedure SaveToFile(AList: TList<string>; AFileName: string; ALevel: integer);
     procedure SaveManifest(AFolder: string);
     procedure SaveData(AGuid: TDictionary<string, string>; ADirectory: string);
@@ -28,19 +27,17 @@ implementation
 //  rsSaveDirectory: string; // = '.\XML_Import\';
 { TSaveXml }
 
-function TSaveXml.CountSameFile(ADirectory: string; AFile: string): TList<string>;
+procedure TSaveXml.CountSameFile(ADirectory: string; AFile: string; var AResList: TList<string>);
 var
   sr: TSearchRec;
 begin
-  Result := TList<string>.Create;
   ChDir(ExtractFilePath(ParamStr(0)) + '\' + ADirectory);
   if FindFirst(AFile + '.*', faAnyFile, sr) = 0 then
     repeat
-      Result.Add(sr.Name);
+      AResList.Add(sr.Name);
     until FindNext(sr) <> 0;
   FindClose(sr);
 end;
-
 
 function TSaveXml.CountFile(ADirectory: string; const AFileType: string = '*_*.xml'): TList<string>;
 var
@@ -64,7 +61,7 @@ var
   GUID: string;
   I: integer;
 begin
-  XML := TXMLDocument.Create(Application) as IXMLDocument;
+  XML := TXMLDocument.Create(nil);
   try
     XML.Active := True;
     XML.Encoding := 'utf-8';
@@ -120,8 +117,9 @@ var
   Root, Resources, RS, Metadata: IXMLNode;
   FileName, GUID, ListFiles: string;
   GuidList: TDictionary<string, string>;
+  Res, FileList: TList<string>;
 begin
-  XML := TXMLDocument.Create(Application) as IXMLDocument;
+  XML := TXMLDocument.Create(nil);
   try
     XML.Active := True;
     XML.Encoding := 'utf-8';
@@ -137,39 +135,49 @@ begin
     Resources := Root.AddChild('resources');
     GuidList := TDictionary<string, string>.Create;
     try
-      for FileName in CountFile('XML_Import\' + AFolder + '\') do
-      begin
-        GuidList.AddOrSetValue(FileName, ReturnGUID);
-        GuidList.TryGetValue(FileName, GUID);
-        RS := Root.ChildNodes['resources'].AddChild('resource');
-        RS.Attributes['identifier'] := GUID;
-        RS.Attributes['href'] := FileName;
-        RS.Attributes['type'] := 'imsqti_item_xmlv2p1';
-        Metadata := RS.AddChild('metadata');
-        Metadata := Metadata.AddChild('imsmd:lom').AddChild('imsmd:general');
-        Metadata.AddChild('imsmd:identifier').NodeValue := GUID;
-        Metadata.AddChild('imsmd:title').AddChild('imsmd:langstring').Attributes['xml:lang'] := 'en';
-        Metadata.ChildNodes['imsmd:title'].ChildNodes['imsmd:langstring'].NodeValue := FileName;
-        Metadata.AddChild('imsmd:description').AddChild('imsmd:langstring').Attributes['xml:lang'] := 'en';
-        Metadata.AddChild('imsmd:keywords').AddChild('imsmd:langstring').Attributes['xml:lang'] := 'en';
-        Metadata.AddChild('imsmd:author').AddChild('imsmd:langstring').Attributes['xml:lang'] := 'en';
-        Metadata := Metadata.ParentNode;
-        Metadata := Metadata.AddChild('imsmd:metametadata');
-        Metadata.AddChild('imsmd:metadatascheme').NodeValue := 'LOMv1.0';
-        Metadata.AddChild('imsmd:metadatascheme').NodeValue := 'QTIv2.1';
-        Metadata.AddChild('imsmd:language').NodeValue := 'en';
-        Metadata.ParentNode.AddChild('imsmd:technical').AddChild('imsmd:format').NodeValue := 'text/x-imsqti-item-xml';
-        Metadata := Metadata.ParentNode.ParentNode;
-        Metadata := Metadata.AddChild('imsqti:qtiMetadata');
-        Metadata.AddChild('imsqti:timeDependent').NodeValue := 'false';
-        Metadata.AddChild('imsqti:feedbackType').NodeValue := 'nonadaptive';
-        Metadata.AddChild('imsqti:solutionAvailable').NodeValue := 'true';
-        Metadata.AddChild('imsqti:toolName').NodeValue := 'FastTestWeb';
-        Metadata.AddChild('imsqti:toolVersion').NodeValue := '3.75.8';
-        Metadata.AddChild('imsqti:toolVendor').NodeValue := '4ROI';
-        for ListFiles in CountSameFile('XML_Import\' + AFolder + '\', StringReplace(FileName, '.xml', '', [rfReplaceAll])) do
-          Metadata.ParentNode.ParentNode.AddChild('file').Attributes['href'] := ListFiles;
-
+      FileList := CountFile('XML_Import\' + AFolder + '\');
+      try
+        for FileName in FileList do
+        begin
+          GuidList.AddOrSetValue(FileName, ReturnGUID);
+          GuidList.TryGetValue(FileName, GUID);
+          RS := Root.ChildNodes['resources'].AddChild('resource');
+          RS.Attributes['identifier'] := GUID;
+          RS.Attributes['href'] := FileName;
+          RS.Attributes['type'] := 'imsqti_item_xmlv2p1';
+          Metadata := RS.AddChild('metadata');
+          Metadata := Metadata.AddChild('imsmd:lom').AddChild('imsmd:general');
+          Metadata.AddChild('imsmd:identifier').NodeValue := GUID;
+          Metadata.AddChild('imsmd:title').AddChild('imsmd:langstring').Attributes['xml:lang'] := 'en';
+          Metadata.ChildNodes['imsmd:title'].ChildNodes['imsmd:langstring'].NodeValue := FileName;
+          Metadata.AddChild('imsmd:description').AddChild('imsmd:langstring').Attributes['xml:lang'] := 'en';
+          Metadata.AddChild('imsmd:keywords').AddChild('imsmd:langstring').Attributes['xml:lang'] := 'en';
+          Metadata.AddChild('imsmd:author').AddChild('imsmd:langstring').Attributes['xml:lang'] := 'en';
+          Metadata := Metadata.ParentNode;
+          Metadata := Metadata.AddChild('imsmd:metametadata');
+          Metadata.AddChild('imsmd:metadatascheme').NodeValue := 'LOMv1.0';
+          Metadata.AddChild('imsmd:metadatascheme').NodeValue := 'QTIv2.1';
+          Metadata.AddChild('imsmd:language').NodeValue := 'en';
+          Metadata.ParentNode.AddChild('imsmd:technical').AddChild('imsmd:format').NodeValue := 'text/x-imsqti-item-xml';
+          Metadata := Metadata.ParentNode.ParentNode;
+          Metadata := Metadata.AddChild('imsqti:qtiMetadata');
+          Metadata.AddChild('imsqti:timeDependent').NodeValue := 'false';
+          Metadata.AddChild('imsqti:feedbackType').NodeValue := 'nonadaptive';
+          Metadata.AddChild('imsqti:solutionAvailable').NodeValue := 'true';
+          Metadata.AddChild('imsqti:toolName').NodeValue := 'FastTestWeb';
+          Metadata.AddChild('imsqti:toolVersion').NodeValue := '3.75.8';
+          Metadata.AddChild('imsqti:toolVendor').NodeValue := '4ROI';
+          Res := TList<string>.Create;
+          try
+            CountSameFile('XML_Import\' + AFolder + '\', StringReplace(FileName, '.xml', '', [rfReplaceAll]), Res);
+            for ListFiles in Res do
+              Metadata.ParentNode.ParentNode.AddChild('file').Attributes['href'] := ListFiles;
+          finally
+            Res.Free;
+          end;
+        end;
+      finally
+        FileList.Free;
       end;
       XML.SaveToFile(rsSaveDirectory + '\' + AFolder + '\' + 'imsmanifest.xml');
       SaveData(GuidList, AFolder);
@@ -187,7 +195,7 @@ var
   Root: IXMLNode;
   I: integer;
 begin
-  XML := TXMLDocument.Create(Application) as IXMLDocument;
+  XML := TXMLDocument.Create(nil);
   try
     XML.Active := True;
     XML.Encoding := 'utf-8';
@@ -198,9 +206,9 @@ begin
     Root.Attributes['adaptive'] := 'false';
     Root.Attributes['timeDependent'] := 'false';
     Root.Attributes['identifier'] := AFileName;
-    Root.Attributes['title'] := AList.Items[0];
+    Root.Attributes['title'] := AFileName; //AList.Items[0];
 
-    Root.AddChild('responseDeclaration').AddChild('correctResponse').AddChild('value').NodeValue := AFileName + '_R_' + IntToStr(ALevel);
+    Root.AddChild('responseDeclaration').AddChild('correctResponse').AddChild('value').NodeValue := AFileName; // + '_R_' + IntToStr(ALevel);
     Root.ChildNodes['responseDeclaration'].Attributes['baseType'] := 'identifier';
     Root.ChildNodes['responseDeclaration'].Attributes['identifier'] := 'RESPONSE';
     Root.ChildNodes['responseDeclaration'].Attributes['cardinality'] := 'cardinality';
@@ -209,7 +217,7 @@ begin
     Root.ChildNodes['responseDeclaration'].ChildNodes['mapping'].Attributes['defaultValue'] := '0';
     Root.ChildNodes['responseDeclaration'].ChildNodes['mapping'].Attributes['upperBound'] := '1.0';
     Root.ChildNodes['responseDeclaration'].ChildNodes['mapping'].Attributes['lowerBound'] := '0';
-    Root.ChildNodes['responseDeclaration'].ChildNodes['mapping'].ChildNodes['mapEntry'].Attributes['mapKey'] := AFileName + '_R_' + IntToStr(ALevel);
+    Root.ChildNodes['responseDeclaration'].ChildNodes['mapping'].ChildNodes['mapEntry'].Attributes['mapKey'] := AFileName; // + '_R_' + IntToStr(ALevel);
 
     Root.ChildNodes['outcomeDeclaration'].AddChild('defaultValue').AddChild('value').NodeValue := '0';
     Root.ChildNodes['outcomeDeclaration'].Attributes['cardinality'] := 'single';
@@ -239,3 +247,4 @@ end;
 
 end.
 
+
