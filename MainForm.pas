@@ -15,7 +15,7 @@ uses
   FireDAC.Phys.Intf, FireDAC.Stan.Def, FireDAC.Stan.Pool, FireDAC.Stan.Async,
   FireDAC.Phys, FireDAC.Phys.SQLite, FireDAC.Phys.SQLiteDef, FireDAC.Stan.ExprFuncs,
   FireDAC.VCLUI.Wait, FireDAC.Stan.Param, FireDAC.DatS, FireDAC.DApt.Intf,
-  FireDAC.Comp.DataSet, FireDAC.Comp.Client, ZipForge;
+  FireDAC.Comp.DataSet, FireDAC.Comp.Client, ZipForge, RVSeqItem;
 
 type
   TfrmMain = class(TForm)
@@ -101,12 +101,12 @@ var
   Directory, DocList: string;
   list: TList<string>;
 begin
-  Directory := ExtractFilePath(ParamStr(0)) + 'Items_docs\';
+  Directory := ExtractFilePath(ParamStr(0)) + 'Exam_docs\';
   XMLImport := TSaveXml.Create;
   try
     WApp := CreateOleObject('Word.Application');
     WApp.Visible := False;
-    list := XMLImport.CountFile('Items_docs\', '*.doc');
+    list := XMLImport.CountFile('Exam_docs\', '*.doc');
     try
       for DocList in list do
         Save(Directory + DocList);
@@ -235,7 +235,7 @@ procedure TfrmMain.ExtractDatafromDoc(ADocName: string);
     Items = '^Item ID:[0-9]{5,5}';
     Domain = 'Domain ID:';
     ItTable = '[A-Z]{1,1}[.]*';
-    StrLenght = 25;
+    StrLenght = 15;
   begin
     if TRegEx.IsMatch(AString, SQuestion) or TRegEx.IsMatch(AString, Items) or TRegEx.IsMatch(AString, Domain) or
       (TRegEx.IsMatch(AString, ItTable) and (Length(AString) >= StrLenght)) then
@@ -257,8 +257,10 @@ procedure TfrmMain.ExtractDatafromDoc(ADocName: string);
   begin
     if AIndex = rView.ItemCount - 1 then
       Result := True
-    else if TRegEx.IsMatch(rView.GetItemTextA(AIndex + 1), '[0-9]{1,1}\.') then
-      Result := True;
+//    else if TRegEx.IsMatch(rView.GetItemTextA(AIndex + 1), '[0-9]{1,1}\.') then
+//      Result := True
+    else
+      Result := False;
   end;
 
 const
@@ -271,6 +273,7 @@ var
 begin
   if rView.LoadRTF(ADocName) then
   begin
+    rView.RefreshSequences;
     rView.Format;
     try
       QuestQty := 1;
@@ -281,12 +284,11 @@ begin
         begin
           begin
             IsQuestion := True;
-            a := Trim(A);
-            A := TRegEx.Replace(A, '^[0-9]{1,1}\.', '', [roIgnoreCase]);
-            if TRegEx.IsMatch(rView.GetItemTextA(I), '[A-Z]{1,1}\){1,1}') then
-              A := A + '#13#10' + DeleteSymbols(rView.GetItemTextA(I))
-            else
-              A := A + rView.GetItemTextA(I);
+            if (TRegEx.IsMatch(rView.GetItemTextW(I), '[A-Z]{1,1}\){1,1}')) or
+               (TRVSeqType(rView.GetItemStyle(I)) = rvseqUpperAlpha) then
+              A := A + '#13#10' + DeleteSymbols(rView.GetItemTextW(I))
+            else if Length(rView.GetItemTextW(I)) > 0 then
+              A := A + ' ' + rView.GetItemTextW(I);
           end;
           if rView.GetItemStyle(I) = rvsPicture then
           begin
@@ -296,8 +298,9 @@ begin
           end;
           if (Length(A) > Symbols) and CheckNextSymbol(I) then
           begin
-            A := TRegEx.Replace(A, '\s{2,}', '', [roIgnoreCase]);
-            A := TRegEx.Replace(A, '^[0-9]{1,}\.', '', [roIgnoreCase]);
+            A := Trim(A);
+            A := TRegEx.Replace(A, '[\s]{2,}', '', [roIgnoreCase]);
+            A := TRegEx.Replace(A, '^[0-9]{1,1}\.', '', [roIgnoreCase]);
             ExtractTextFromWordFile(A, ADocName, QuestQty);
             Inc(QuestQty, 1);
             A := '';
